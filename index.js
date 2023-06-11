@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const colors = require("colors");
+const userHandler = require("./routers/userRouter");
 const app = express();
 require("dotenv").config();
 const port = process.env.PORT || 5000;
@@ -23,7 +24,10 @@ mongoose
     console.log(`${err}`.red.inverse);
   });
 
-  
+ 
+ // APP API CALL
+app.use("/api/v1/user", userHandler);
+
 
 // Server Run
 app.listen(port, () => {
