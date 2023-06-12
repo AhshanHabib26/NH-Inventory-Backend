@@ -47,6 +47,8 @@ const userSchema = mongoose.Schema(
   { timestamps: true }
 );
 
+
+// @desc      Password Hashed
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
     next();
@@ -56,13 +58,14 @@ userSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, salt);
 });
 
-
+// @desc      TWT Token Create and Return
 userSchema.methods.getJwtToken = function () {
   return jwt.sign({ id: this._id }, process.env.JWT_SECRET_KEY, {
     expiresIn: process.env.JWT_EXPIRE,
   });
 };
 
+// @desc      Password Compare And Return
 userSchema.methods.matchPassword = async function (enteredPass) {
   return await bcrypt.compare(enteredPass, this.password);
 };

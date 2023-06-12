@@ -3,6 +3,10 @@ const asyncHandler = require("../middleware/asyncHandler");
 const ErrorResponse = require("../utils/errorResponse");
 const jwt = require("jsonwebtoken");
 
+
+// @desc      Register user
+// @route     POST /api/v1/user/register
+// @access    Public
 exports.userRegister = asyncHandler(async (req, res, next) => {
   const { name, email, password, role, bio, phone, avatar } = req.body;
 
@@ -37,6 +41,10 @@ exports.userRegister = asyncHandler(async (req, res, next) => {
   }
 });
 
+
+// @desc      Login user
+// @route     POST /api/v1/user/login
+// @access    Public
 exports.userLogin = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
 
@@ -58,6 +66,10 @@ exports.userLogin = asyncHandler(async (req, res, next) => {
   sendTokenResponse(user, 200, res);
 });
 
+
+// @desc      Logout user
+// @route     Get /api/v1/user/logout
+// @access    Public
 exports.userLogout = asyncHandler(async (req, res, next) => {
   res.cookie("token", "none", {
     expires: new Date(Date.now() + 10 * 1000),
@@ -71,6 +83,10 @@ exports.userLogout = asyncHandler(async (req, res, next) => {
   });
 });
 
+
+// @desc      Get user
+// @route     Get /api/v1/user/getUser
+// @access    Private
 exports.getUser = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.user.id).select("-password");
 
@@ -80,6 +96,10 @@ exports.getUser = asyncHandler(async (req, res, next) => {
   });
 });
 
+
+// @desc      Get Use Logged in Status
+// @route     Get /api/v1/user/userStatus
+// @access    Public
 exports.loginStatus = asyncHandler(async (req, res, next) => {
   const token = req.cookies.token;
   if (!token) {
@@ -92,6 +112,11 @@ exports.loginStatus = asyncHandler(async (req, res, next) => {
   return res.json(false);
 });
 
+
+
+// @desc      Update User
+// @route     Patch /api/v1/user/userUpdate
+// @access    Protect
 exports.userUpdate = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.user.id);
   if (user) {
@@ -116,6 +141,10 @@ exports.userUpdate = asyncHandler(async (req, res, next) => {
   }
 });
 
+
+// @desc      Update Password
+// @route     Patch /api/v1/user/updatePassword
+// @access    Protect
 exports.updatePassword = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.user.id);
 
@@ -127,6 +156,10 @@ exports.updatePassword = asyncHandler(async (req, res, next) => {
 
   sendTokenResponse(user, 200, res);
 });
+
+
+
+
 
 // Get token from model, create cookie and send response
 const sendTokenResponse = (user, statusCode, res) => {
