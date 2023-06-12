@@ -116,6 +116,18 @@ exports.userUpdate = asyncHandler(async (req, res, next) => {
   }
 });
 
+exports.updatePassword = asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.user.id);
+
+  if (!(await user.matchPassword(req.body.oldPassword))) {
+    return next(new ErrorResponse("Password is incorrect", 401));
+  }
+  user.password = req.body.newPassword;
+  await user.save();
+
+  sendTokenResponse(user, 200, res);
+});
+
 // Get token from model, create cookie and send response
 const sendTokenResponse = (user, statusCode, res) => {
   // Create token
