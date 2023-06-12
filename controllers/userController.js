@@ -26,18 +26,17 @@ exports.userRegister = asyncHandler(async (req, res, next) => {
     role,
   });
 
+  const token = await user.getJwtToken();
+
   if (user) {
-    const { _id, name, email, role, avatar, bio, phone } = user;
     res.status(200).json({
-      _id,
-      name,
-      email,
-      role,
-      avatar,
-      bio,
-      phone,
+      success: true,
+      token,
     });
   } else {
-    return next(new ErrorResponse("Something Went Wrong", 404));
+    res.status(404).json({
+      success: false,
+      message: "Something Went Wrong",
+    });
   }
 });
