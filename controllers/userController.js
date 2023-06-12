@@ -9,7 +9,7 @@ exports.userRegister = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse("Please provide all required fields", 400));
   }
 
-  if (password.length > 6) {
+  if (password.length < 6) {
     return next(new ErrorResponse("Password must be up to 6 characters", 400));
   }
 
@@ -27,6 +27,15 @@ exports.userRegister = asyncHandler(async (req, res, next) => {
   });
 
   const token = await user.getJwtToken();
+
+  // HTTP Cookie Only 
+  res.cookie("token", token, {
+    path: "/",
+    httpOnly: true,
+    expires: new Date(Date.now() + 1000 * 86400),
+    sameSite: "none",
+    secure: true,
+  }); 
 
   if (user) {
     res.status(200).json({

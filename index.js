@@ -4,15 +4,18 @@ const cors = require("cors");
 const colors = require("colors");
 const userHandler = require("./routers/userRouter");
 const errorHandler = require("./middleware/errorHandler");
+const cookieParser = require("cookie-parser");
+const bodyParser = require("body-parser");
 const app = express();
 require("dotenv").config();
 const port = process.env.PORT || 5000;
 
-
-
 // MongoDB MiddleWare
 app.use(express.json());
 app.use(cors());
+app.use(cookieParser());
+app.use(express.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 // DB Connect
 mongoose
@@ -25,13 +28,11 @@ mongoose
     console.log(`${err}`.red.inverse);
   });
 
- 
- // APP API CALL
+// APP API CALL
 app.use("/api/v1/user", userHandler);
 
-
 // APP Error Handler
-app.use(errorHandler)
+app.use(errorHandler);
 
 // Server Run
 app.listen(port, () => {
