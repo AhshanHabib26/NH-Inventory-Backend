@@ -26,22 +26,8 @@ exports.userRegister = asyncHandler(async (req, res, next) => {
     role,
   });
 
-  const token = await user.getJwtToken();
-
-  // HTTP Cookie Only 
-  res.cookie("token", token, {
-    path: "/",
-    httpOnly: true,
-    expires: new Date(Date.now() + 1000 * 86400),
-    sameSite: "none",
-    secure: true,
-  }); 
-
   if (user) {
-    res.status(200).json({
-      success: true,
-      token,
-    });
+    sendTokenResponse(user, 200, res);
   } else {
     res.status(404).json({
       success: false,
@@ -49,3 +35,56 @@ exports.userRegister = asyncHandler(async (req, res, next) => {
     });
   }
 });
+
+exports.userLogin = asyncHandler(async (req, res, next) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return next(new ErrorResponse("Please provide an email and password", 400));
+  }
+
+  const user = await User.findOne({ email });
+  if (!user) {
+    return next(new ErrorResponse("Invalid credentials", 401));
+  }
+
+  const isPassMatch = await user.matchPassword(password);
+
+  if (!isPassMatch) {
+    return next(new ErrorResponse("Invalid credentials", 401));
+  }
+
+  sendTokenResponse(user, 200, res);
+});
+
+
+
+
+
+
+
+
+
+
+// Get token from model, create cookie and send response
+const sendTokenResponse = (user, statusCode, res) => {
+  // Create token
+  const token = user.getJwtToken();
+
+  const options = {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+    sameSite: "none",
+  };
+
+  if (process.env.NODE_ENV === "production") {
+    options.secure = true;
+  }
+
+  res.status(statusCode).cookie("token", token, options).json({
+    success: true,
+    token,
+  });
+};
