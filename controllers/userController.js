@@ -92,6 +92,30 @@ exports.loginStatus = asyncHandler(async (req, res, next) => {
   return res.json(false);
 });
 
+exports.userUpdate = asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.user.id);
+  if (user) {
+    const { email, name, avatar, phone, bio } = user;
+    user.email = email;
+    user.name = req.body.name || name;
+    user.phone = req.body.phone || phone;
+    user.avatar = req.body.avatar || avatar;
+    user.bio = req.body.bio || bio;
+
+    const updatedUser = await user.save();
+    res.status(200).json({
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      avatar: updatedUser.avatar,
+      phone: updatedUser.phone,
+      bio: updatedUser.bio,
+    });
+  } else {
+    return next(new ErrorResponse("User Not Found", 404));
+  }
+});
+
 // Get token from model, create cookie and send response
 const sendTokenResponse = (user, statusCode, res) => {
   // Create token
