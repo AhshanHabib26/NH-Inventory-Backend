@@ -57,14 +57,18 @@ exports.userLogin = asyncHandler(async (req, res, next) => {
   sendTokenResponse(user, 200, res);
 });
 
+exports.userLogout = asyncHandler(async (req, res, next) => {
+  res.cookie("token", "none", {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+  });
 
-
-
-
-
-
-
-
+  res.status(200).json({
+    success: true,
+    message: "Successfully Logged Out",
+    data: {},
+  });
+});
 
 // Get token from model, create cookie and send response
 const sendTokenResponse = (user, statusCode, res) => {
