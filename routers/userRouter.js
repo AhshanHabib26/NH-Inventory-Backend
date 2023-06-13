@@ -7,6 +7,8 @@ const {
   loginStatus,
   userUpdate,
   updatePassword,
+  forgotPassword,
+  resetPassword,
 } = require("../controllers/userController");
 const { protect } = require("../middleware/authHandler");
 const router = express.Router();
@@ -14,9 +16,11 @@ const router = express.Router();
 router.post("/register", userRegister);
 router.post("/login", userLogin);
 router.get("/logout", userLogout);
-router.get("/getUser", protect, getUser);
-router.get("/userStatus", loginStatus);
-router.patch("/userUpdate", protect, userUpdate);
-router.patch("/updatePassword", protect, updatePassword);
+router.get("/getuser", protect, getUser);
+router.get("/userstatus", loginStatus);
+router.patch("/userupdate", protect, userUpdate);
+router.patch("/updatepassword", protect, updatePassword);
+router.post("/forgotpassword", forgotPassword);
+router.put("/resetpassword/:resettoken", resetPassword);
 
 module.exports = router;
