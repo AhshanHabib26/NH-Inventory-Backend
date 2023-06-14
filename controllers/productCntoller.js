@@ -96,3 +96,70 @@ exports.deleteProduct = asyncHandler(async (req, res, next) => {
     data: {},
   });
 });
+
+exports.updateProduct = asyncHandler(async (req, res, next) => {
+  const { name, sku, category, price, quantity, description } = req.body;
+  const { id } = req.params;
+  const product = await Product.findById(id);
+
+  if (!product) {
+    return next(new ErrorResponse("Product Not Found", 404));
+  }
+
+  if (product.user.toString() !== req.user.id) {
+    return next(
+      new ErrorResponse(
+        `User ${id} is not authorized to delete this product`,
+        401
+      )
+    );
+  }
+
+  // Handle Image Upload
+  let fileData = {};
+  console.log(req.file);
+  if (req.file) {
+    let uploadedFile;
+
+    try {
+      uploadedFile = await cloudinary.v2.uploader.upload(req.file.path, {
+        folder: "Inventory",
+        resource_type: "image",
+      });
+    } catch (error) {
+      return next(new ErrorResponse("Image colud not be uploaded", 500));
+    }
+
+    fileData = {
+      fileName: req.file.originalname,
+      filePath: uploadedFile.secure_url,
+      fileType: req.file.mimetype,
+      fileSize: fileSizeFormatter(req.file.size, 2),
+    };
+  }
+
+  // Updated Product
+  const updatedProduct = await findByIdAndUpdate(
+    {
+      _id: id,
+    },
+    {
+      name,
+      sku,
+      price,
+      quantity,
+      description,
+      category,
+      image: Object.keys(fileData).length === 0 ? product?.image : fileData,
+    },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+
+  res.status(200).json({
+    success: true,
+    updatedProduct,
+  });
+});
