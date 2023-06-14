@@ -4,6 +4,10 @@ const ErrorResponse = require("../utils/errorResponse");
 const { fileSizeFormatter } = require("../utils/imageUpload");
 const cloudinary = require("cloudinary");
 
+
+// @desc      Create Porduct
+// @route     Post /api/v1/products
+// @access    Private
 exports.createProduct = asyncHandler(async (req, res, next) => {
   const { name, sku, category, price, quantity, description } = req.body;
 
@@ -53,6 +57,10 @@ exports.createProduct = asyncHandler(async (req, res, next) => {
   });
 });
 
+
+// @desc      Get All Porducts
+// @route     Get /api/v1/products
+// @access    Private
 exports.getAllProducts = asyncHandler(async (req, res, next) => {
   const products = await Product.find({ user: req.user.id }).sort("-createdAt");
   res.status(200).json({
@@ -61,6 +69,10 @@ exports.getAllProducts = asyncHandler(async (req, res, next) => {
   });
 });
 
+
+// @desc      Get Single Porduct
+// @route     Get /api/v1/products/:id
+// @access    Private
 exports.getSingleProduct = asyncHandler(async (req, res, next) => {
   const product = await Product.findById(req.params.id);
 
@@ -73,6 +85,10 @@ exports.getSingleProduct = asyncHandler(async (req, res, next) => {
   });
 });
 
+
+// @desc      Delete Porduct
+// @route     Delete /api/v1/products/:id
+// @access    Private
 exports.deleteProduct = asyncHandler(async (req, res, next) => {
   const product = await Product.findById(req.params.id);
 
@@ -97,6 +113,11 @@ exports.deleteProduct = asyncHandler(async (req, res, next) => {
   });
 });
 
+
+
+// @desc      Update Porduct
+// @route     Patch /api/v1/products/:id
+// @access    Private
 exports.updateProduct = asyncHandler(async (req, res, next) => {
   const { name, sku, category, price, quantity, description } = req.body;
   const { id } = req.params;
