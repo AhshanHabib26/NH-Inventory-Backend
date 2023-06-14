@@ -11,6 +11,7 @@ const app = express();
 require("dotenv").config();
 const port = process.env.PORT || 5000;
 const path = require("path");
+const cloudinary = require("cloudinary");
 
 // MongoDB MiddleWare
 app.use(express.json());
@@ -21,6 +22,13 @@ app.use(bodyParser.json());
 
 // Image Path Setup
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+// Cloudinary Setup
+cloudinary.v2.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUD_API_KEY,
+  api_secret: process.env.CLOUD_API_SECRET,
+});
 
 // DB Connect
 mongoose
