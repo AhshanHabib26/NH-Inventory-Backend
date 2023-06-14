@@ -72,3 +72,27 @@ exports.getSingleProduct = asyncHandler(async (req, res, next) => {
     product,
   });
 });
+
+exports.deleteProduct = asyncHandler(async (req, res, next) => {
+  const product = await Product.findById(req.params.id);
+
+  if (!product) {
+    return next(new ErrorResponse("Product Not Found", 404));
+  }
+
+  if (product.user.toString() !== req.user.id) {
+    return next(
+      new ErrorResponse(
+        `User ${req.params.id} is not authorized to delete this product`,
+        401
+      )
+    );
+  }
+
+  product.remove();
+
+  res.status(200).json({
+    success: true,
+    data: {},
+  });
+});
