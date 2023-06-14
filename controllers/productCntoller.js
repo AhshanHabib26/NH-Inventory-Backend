@@ -52,3 +52,12 @@ exports.createProduct = asyncHandler(async (req, res, next) => {
     product,
   });
 });
+
+exports.getAllProducts = asyncHandler(async (req, res, next) => {
+  const products = await Product.find({ user: req.user.id }).sort("-createdAt");
+  res.status(200).json({
+    success: true,
+    products,
+  });
+});
+
