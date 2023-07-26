@@ -12,6 +12,7 @@ require("dotenv").config();
 const port = process.env.PORT || 5000;
 const path = require("path");
 const cloudinary = require("cloudinary");
+const contactHandler = require("./routers/contactRouter");
 
 
 // MongoDB MiddleWare
@@ -45,6 +46,7 @@ mongoose
 // APP API CALL
 app.use("/api/v1/user", userHandler);
 app.use("/api/v1/products", productHandler);
+app.use("/api/v1/contact", contactHandler);
 
 // APP Error Handler
 app.use(errorHandler);
